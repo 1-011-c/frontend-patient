@@ -23,16 +23,13 @@ class StorageService {
     return testCases;
   }
 
-  static Future<bool> storeOrUpdate(final CoronaTestCase testCase) async {
+  static Future<bool> storeOrUpdate(final CoronaTestCase o) async {
     final List<CoronaTestCase> testCases = await StorageService.getAll();
-    print('List of testcases:');
-    print(testCases);
-    testCases.add(testCase);
 
-    print('Set: ${testCases.toSet()}');
+    final List<CoronaTestCase> filtered = testCases.where((testCase) => o.url != testCase.url);
+    filtered.add(o);
 
-    final String json = jsonEncode(testCases.toSet().toList());
-    print('JSON: $json');
+    final String json = jsonEncode(filtered.toSet().toList());
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return await prefs.setString(STORAGE_KEY, json);
   }

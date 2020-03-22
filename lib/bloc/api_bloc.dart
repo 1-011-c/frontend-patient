@@ -18,9 +18,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       yield APILoading();
 
       final CoronaResponse apiResponse = await APIService.get(event.url);
-
-      print('${apiResponse.coronaTestCase.uuidRead} : ${apiResponse.coronaTestCase.date}');
-
+      
       if (apiResponse.coronaTestCase != null) {
         if(await StorageService.storeOrUpdate(apiResponse.coronaTestCase)) {
           yield APILoaded(response: apiResponse.coronaTestCase);

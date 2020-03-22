@@ -14,28 +14,21 @@ CoronaStatus getCoronaStatusFromString(String status) {
 
 class CoronaTestCase {
   String nickname;
-  final String uuidRead;
-  final String uuidWrite;
   final CoronaStatus infected;
   final String date;
+  String url;
 
   CoronaTestCase({
     @required this.nickname,
-    @required this.uuidRead,
-    @required this.uuidWrite,
     @required this.infected,
-    @required this.date
+    @required this.date,
+    @required this.url
   });
-
-  String getReadURL() {
-    return '/corona-test-case/${this.uuidRead}';
-  }
 
   factory CoronaTestCase.fromJson(Map<String, dynamic> json) {
     return new CoronaTestCase(
-        nickname: json["uuid_read"],
-        uuidRead: json["uuid_read"],
-        uuidWrite: json["uuid_write"],
+        nickname: "Tested: " + json["date"],
+        url: "",
         infected: getCoronaStatusFromString(json["infected"]),
         date: json["date"]
     );
@@ -43,9 +36,8 @@ class CoronaTestCase {
 
   Map<String, dynamic> toJson() => {
     "nickname": this.nickname,
-    "uuidRead": this.uuidRead,
-    "uuidWrite": this.uuidWrite,
     "infected": this.infected.toString().split(".").last,
-    "date": this.date
+    "date": this.date,
+    "url": this.url
   };
 }

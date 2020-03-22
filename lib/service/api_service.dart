@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:frontend_patient/model/corona_response.dart';
 import 'package:frontend_patient/model/corona_test_case.dart';
@@ -20,8 +18,6 @@ class APIService {
           errorMessage: 'QR Code ist ungültig. Eventuell haben Sie einen falschen eingescannt.'
       );
 
-    print('Try to fetch from $API_BASE_URL$url');
-
     final Response response = await dio.get('$API_BASE_URL$url');
 
     if (response.statusCode != 200)
@@ -30,10 +26,10 @@ class APIService {
           errorMessage: 'Code konnte nicht verarbeitet werden.'
       );
 
-    print(response);
-
+    final testCase = CoronaTestCase.fromJson(response.data);
+    testCase.url = url;
     return CoronaResponse(
-        coronaTestCase: CoronaTestCase.fromJson(response.data)
+        coronaTestCase: testCase
     );
   }
 }

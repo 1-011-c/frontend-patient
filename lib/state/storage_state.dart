@@ -23,3 +23,9 @@ class StorageFetched extends StorageState {
 
   const StorageFetched({@required this.testCases});
 }
+
+class StorageError extends StorageState {
+  final String message;
+
+  const StorageError({@required this.message});
+}

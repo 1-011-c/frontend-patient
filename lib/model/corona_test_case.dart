@@ -13,13 +13,13 @@ CoronaStatus getCoronaStatusFromString(String status) {
 }
 
 class CoronaTestCase {
-  final String nickname;
+  String nickname;
   final String uuidRead;
   final String uuidWrite;
   final CoronaStatus infected;
   final String date;
 
-  const CoronaTestCase({
+  CoronaTestCase({
     @required this.nickname,
     @required this.uuidRead,
     @required this.uuidWrite,

@@ -11,18 +11,21 @@ class StorageBloc extends Bloc<StorageEvent, StorageState> {
   Stream<StorageState> mapEventToState(StorageEvent event) async* {
     if (event is GetAllStorageEvent) {
       yield StorageFetching();
-
-      final List<CoronaTestCase> testCases = StorageService.getAll();
-
+      final List<CoronaTestCase> testCases = await StorageService.getAll();
       yield StorageFetched(testCases: testCases);
     }
 
     if (event is UpdateNicknameStorageEvent) {
       yield StorageUpdating();
 
-      StorageService.storeOrUpdate(event.nickname, event.testCase);
-
-      yield StorageUpdated();
+      final CoronaTestCase testCase = event.testCase;
+      testCase.nickname = event.nickname;
+      if (await StorageService.storeOrUpdate(testCase)) {
+        yield StorageUpdated();
+      }
+      else {
+        yield StorageError(message: 'Could not store test-case in storage');
+      }     
     }
   }
 

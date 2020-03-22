@@ -43,6 +43,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
         final List<Future<CoronaResponse>> futures = [];
 
         event.testCases.forEach((testCase) {
+          print('URL FOR: ${testCase.url}');
           futures.add(APIService.get(testCase.url));
         });
 
@@ -54,6 +55,10 @@ class APIBloc extends Bloc<APIEvent, APIState> {
               error = true;
             }
           }
+          else {
+            print('ERROR 2');
+            error = true;
+          }
         }
 
         if(error) {
@@ -61,8 +66,15 @@ class APIBloc extends Bloc<APIEvent, APIState> {
           yield APIError(message: 'ERROR');
         }
         else {
-          yield APILoadedMultiple(responses: responses.map((o) => o.coronaTestCase));
+          print('KEIN ERROR');
+          var res = responses.map((o) {
+            return o.coronaTestCase;
+          }).toList();
+          print('RES: $res');
+          yield APILoadedMultiple(responses: res);
+          print('YIELD');
           event.context.bloc<StorageBloc>().add(GetAllStorageEvent());
+          print('UPDATED');
         }
     }
   }

@@ -76,6 +76,7 @@ class _MainPageState extends State<MainPage> {
       ),
       body: BlocConsumer<APIBloc, APIState>(
         listener: (_, apiState) {
+          print('State is: $apiState');
           if(apiState is APILoadedMultiple) {
             _refreshCompleter?.complete();
             _refreshCompleter = Completer();

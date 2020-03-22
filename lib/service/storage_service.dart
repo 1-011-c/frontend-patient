@@ -26,10 +26,19 @@ class StorageService {
   static Future<bool> storeOrUpdate(final CoronaTestCase o) async {
     final List<CoronaTestCase> testCases = await StorageService.getAll();
 
-    testCases.removeWhere((element) => element.url == o.url);
+    testCases.removeWhere((element) {
+      if(element.url == o.url) {
+        print('Remove Element: ${element.toJson()}');
+        return true;
+      }
+
+      return false;
+    });
+    print('Adding case: ${o.toJson()}');
     testCases.add(o);
 
     final String json = jsonEncode(testCases.toSet().toList());
+    print('New JSON: $json');
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return await prefs.setString(STORAGE_KEY, json);
   }

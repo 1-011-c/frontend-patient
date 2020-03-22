@@ -20,8 +20,12 @@ class StorageBloc extends Bloc<StorageEvent, StorageState> {
       yield StorageUpdating();
 
       final CoronaTestCase testCase = event.testCase;
+      print('Old Nickname: ${testCase.nickname}');
+      print('New Nickname: ${event.nickname}');
       testCase.nickname = event.nickname;
+      print('Updated Nickname: ${testCase.nickname}');
       if (await StorageService.storeOrUpdate(testCase)) {
+        print('Storage was updated.');
         yield StorageUpdated();
       }
       else {

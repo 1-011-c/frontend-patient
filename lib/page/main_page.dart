@@ -87,7 +87,12 @@ class _MainPageState extends State<MainPage> {
           }
         },
         builder: (_, apiState) {
-          return BlocBuilder<StorageBloc, StorageState>(
+          return BlocConsumer<StorageBloc, StorageState>(
+            listener: (_, storageState) {
+              if (storageState is StorageUpdated) {
+                context.bloc<StorageBloc>().add(GetAllStorageEvent());
+              }
+            },
             builder: (_, state) {
               if (state is StorageFetched) {
                 if (state.testCases.isEmpty)

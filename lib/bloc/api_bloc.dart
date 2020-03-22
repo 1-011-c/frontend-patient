@@ -50,7 +50,9 @@ class APIBloc extends Bloc<APIEvent, APIState> {
         bool error = false;
         for(final CoronaResponse response in responses) {
           if(response.coronaTestCase != null) {
-            error |= await StorageService.storeOrUpdate(response.coronaTestCase);
+            if(!await StorageService.storeOrUpdate(response.coronaTestCase)) {
+              error = true;
+            }
           }
         }
 

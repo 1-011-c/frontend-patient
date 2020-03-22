@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_patient/bloc/storage_bloc.dart';
 import 'package:frontend_patient/event/storage_event.dart';
+import 'package:frontend_patient/model/corona_test_case.dart';
 import 'package:frontend_patient/page/scan_page.dart';
 import 'package:frontend_patient/state/storage_state.dart';
 
@@ -12,8 +13,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  Future<String> _refreshCallback() {
-    return Future.value('okee');
+
+  Future<bool> _refreshCallback() {
+    context.bloc<StorageBloc>().add(GetAllStorageEvent());
+    return Future.value(true);
   }
 
   Future<String> _editNickname(BuildContext context) async {
@@ -74,13 +77,14 @@ class _MainPageState extends State<MainPage> {
               );
 
             var cases = state.testCases.map((caze) {
+              var date = DateTime.parse(caze.date);
               return ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.blue,
                 ),
                 title: Text(caze.nickname),
-                subtitle: Text('Stand: ${caze.date}'),
-                trailing: Text('Status: ${caze.infected}'),
+                subtitle: Text('Stand: ${date.day}.${date.month}.${date.year}'),
+                trailing: Text('${_readableStatus(caze.infected)}'),
                 onLongPress: () => _editNickname(context),
               );
             });
@@ -113,5 +117,17 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  String _readableStatus(CoronaStatus status) {
+    switch(status) {
+      case CoronaStatus.NOT_TESTED:
+        return 'Noch nicht getestet';
+      case CoronaStatus.IN_PROGRESS:
+        return 'In Bearbeitung';
+      case CoronaStatus.POSITIVE:
+        return 'Positiv getetet';
+      case CoronaStatus.NEGATIVE:
+        return 'Negativ getestet';
+    }
+  }
 
 }

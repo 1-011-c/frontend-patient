@@ -27,7 +27,7 @@ class CoronaTestCase {
 
   factory CoronaTestCase.fromJson(Map<String, dynamic> json) {
     return new CoronaTestCase(
-        nickname: "Tested: " + json["date"],
+        nickname: "Test",
         url: "",
         infected: getCoronaStatusFromString(json["infected"]),
         date: json["date"]

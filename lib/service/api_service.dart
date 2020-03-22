@@ -18,7 +18,11 @@ class APIService {
           errorMessage: 'QR Code ist ungültig. Eventuell haben Sie einen falschen eingescannt.'
       );
 
+    print('URL: $API_BASE_URL$url');
+
     final Response response = await dio.get('$API_BASE_URL$url');
+
+    print('response: $response');
 
     if (response.statusCode != 200)
       return CoronaResponse(
@@ -28,6 +32,7 @@ class APIService {
 
     final testCase = CoronaTestCase.fromJson(response.data);
     testCase.url = url;
+    print('Testcase: ${testCase.toJson()}');
     return CoronaResponse(
         coronaTestCase: testCase
     );

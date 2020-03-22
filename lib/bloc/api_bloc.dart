@@ -20,6 +20,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       final CoronaResponse apiResponse = await APIService.get(event.url);
       
       if (apiResponse.coronaTestCase != null) {
+        print('GOTCHA');
         if(await StorageService.storeOrUpdate(apiResponse.coronaTestCase)) {
           yield APILoaded(response: apiResponse.coronaTestCase);
           event.context.bloc<StorageBloc>().add(GetAllStorageEvent());

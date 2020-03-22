@@ -40,4 +40,12 @@ class CoronaTestCase {
         date: json["date"]
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    "nickname": this.nickname,
+    "uuidRead": this.uuidRead,
+    "uuidWrite": this.uuidWrite,
+    "infected": this.infected.toString().split(".").last,
+    "date": this.date
+  };
 }

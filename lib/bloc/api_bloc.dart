@@ -32,8 +32,34 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       else {
         yield APIError(message: apiResponse.errorMessage);
       }
-    } else if (event is RequestCompleteEvent) {
+    }
+    else if (event is RequestCompleteEvent) {
       yield APIWaiting();
+    }
+    else if (event is UpdateAPIEvent) {
+        yield APILoading();
+
+        final List<Future<CoronaResponse>> futures = [];
+
+        event.testCases.forEach((testCase) {
+          futures.add(APIService.get(testCase.url));
+        });
+
+        final List<CoronaResponse> responses = await Future.wait(futures);
+        bool error = false;
+        for(final CoronaResponse response in responses) {
+          if(response.coronaTestCase != null) {
+            error |= await StorageService.storeOrUpdate(response.coronaTestCase);
+          }
+        }
+
+        if(error) {
+          yield APIError(message: 'ERROR');
+        }
+        else {
+          yield APILoadedMultiple(responses: responses.map((o) => o.coronaTestCase));
+          event.context.bloc<StorageBloc>().add(GetAllStorageEvent());
+        }
     }
   }
 

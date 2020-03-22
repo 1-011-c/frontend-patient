@@ -22,6 +22,13 @@ class APILoaded extends APIState {
   const APILoaded({@required this.response});
 }
 
+/// The barcode was successfully sent to the server
+class APILoadedMultiple extends APIState {
+  final List<CoronaTestCase> responses;
+
+  const APILoadedMultiple({@required this.responses});
+}
+
 /// There was an error while sending data to server
 class APIError extends APIState {
   final String message;

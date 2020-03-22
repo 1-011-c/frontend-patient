@@ -31,6 +31,12 @@ class _ScannerPageState extends State<ScannerPage> {
   }
 
   @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     var height = MediaQuery.of(context).size.height;

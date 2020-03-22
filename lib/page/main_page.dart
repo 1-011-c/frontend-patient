@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_patient/bloc/api_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:frontend_patient/bloc/storage_bloc.dart';
 import 'package:frontend_patient/event/api_event.dart';
 import 'package:frontend_patient/event/storage_event.dart';
 import 'package:frontend_patient/model/corona_test_case.dart';
+import 'package:frontend_patient/page/info_page.dart';
 import 'package:frontend_patient/page/scan_page.dart';
 import 'package:frontend_patient/state/api_state.dart';
 import 'package:frontend_patient/state/storage_state.dart';
@@ -77,6 +79,14 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Testbefund'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.help),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => FeatureDiscovery( child: InfoPage())));
+            },
+          )
+        ],
       ),
       body: BlocConsumer<APIBloc, APIState>(
         listener: (_, apiState) {
@@ -95,12 +105,13 @@ class _MainPageState extends State<MainPage> {
             },
             builder: (_, state) {
               if (state is StorageFetched) {
-                if (state.testCases.isEmpty)
+                if (state.testCases.isEmpty){
                   return Container(
                     child: Center(
                       child: Text('Es sind noch keine QR Codes eingescannt worden.'),
                     ),
                   );
+                }
 
                 var cases = state.testCases.map((caze) {
                   var date = DateTime.parse(caze.date);

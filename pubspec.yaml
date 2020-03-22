@@ -20,7 +20,16 @@ dependencies:
   flutter:
     sdk: flutter
   barcode_scan: ^2.0.1
-
+  # https://pub.dev/packages/flutter_bloc
+  # https://bloclibrary.dev/#/
+  bloc: ^3.0.0
+  flutter_bloc: ^3.2.0
+  # https://pub.dev/packages/shared_preferences
+  shared_preferences: ^0.5.6+3
+  # https://pub.dev/packages/dio
+  dio: ^3.0.9
+  equatable: ^1.1.1
+  meta: any
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

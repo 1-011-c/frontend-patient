@@ -27,8 +27,8 @@ class _MainPageState extends State<MainPage> {
     return _refreshCompleter.future;
   }
 
-  Future<String> _editNickname(BuildContext context) async {
-    String teamName = '';
+  Future<String> _editNickname(BuildContext parentContext, CoronaTestCase testCase) async {
+    String nickname = testCase.nickname;
     return showDialog<String>(
       context: context,
       barrierDismissible: false, // dialog is dismissible with a tap on the barrier
@@ -39,11 +39,14 @@ class _MainPageState extends State<MainPage> {
             children: <Widget>[
               new Expanded(
                   child: new TextField(
+                    controller: TextEditingController()..text = nickname,
                     autofocus: true,
                     decoration: new InputDecoration(
-                        labelText: 'Test Name', hintText: 'Test 32'),
+                        labelText: 'Test Name',
+                        hintText: 'Test 32'
+                    ),
                     onChanged: (value) {
-                      teamName = value;
+                      nickname = value;
                     },
                   ))
             ],
@@ -52,7 +55,8 @@ class _MainPageState extends State<MainPage> {
             FlatButton(
               child: Text('Ok'),
               onPressed: () {
-                Navigator.of(context).pop(teamName);
+                parentContext.bloc<StorageBloc>().add(UpdateNicknameStorageEvent(testCase: testCase, nickname: nickname));
+                Navigator.of(context).pop(nickname);
               },
             ),
           ],
@@ -85,7 +89,6 @@ class _MainPageState extends State<MainPage> {
         builder: (_, apiState) {
           return BlocBuilder<StorageBloc, StorageState>(
             builder: (_, state) {
-
               if (state is StorageFetched) {
                 if (state.testCases.isEmpty)
                   return Container(
@@ -103,7 +106,7 @@ class _MainPageState extends State<MainPage> {
                     title: Text(caze.nickname),
                     subtitle: Text('Stand: ${date.day}.${date.month}.${date.year}'),
                     trailing: Text('${_readableStatus(caze.infected)}'),
-                    onLongPress: () => _editNickname(context),
+                    onLongPress: () => _editNickname(context, caze),
                   );
                 });
 

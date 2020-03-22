@@ -37,6 +37,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
       yield APIWaiting();
     }
     else if (event is UpdateAPIEvent) {
+        print('Update Event is triggered');
         yield APILoading();
 
         final List<Future<CoronaResponse>> futures = [];
@@ -54,6 +55,7 @@ class APIBloc extends Bloc<APIEvent, APIState> {
         }
 
         if(error) {
+          print('ERROR');
           yield APIError(message: 'ERROR');
         }
         else {

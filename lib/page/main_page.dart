@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_patient/bloc/api_bloc.dart';
 import 'package:frontend_patient/bloc/storage_bloc.dart';
+import 'package:frontend_patient/event/api_event.dart';
 import 'package:frontend_patient/event/storage_event.dart';
 import 'package:frontend_patient/model/corona_test_case.dart';
 import 'package:frontend_patient/page/scan_page.dart';
+import 'package:frontend_patient/state/api_state.dart';
 import 'package:frontend_patient/state/storage_state.dart';
 
 class MainPage extends StatefulWidget {
@@ -14,9 +19,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
 
-  Future<bool> _refreshCallback() {
-    context.bloc<StorageBloc>().add(GetAllStorageEvent());
-    return Future.value(true);
+  Completer<void> _refreshCompleter;
+
+  Future _refreshCallback(List<CoronaTestCase> testCases) {
+    print('Refreshing data');
+    context.bloc<APIBloc>().add(UpdateAPIEvent(testCases: testCases, context: context));
+    return _refreshCompleter.future;
   }
 
   Future<String> _editNickname(BuildContext context) async {
@@ -56,6 +64,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    _refreshCompleter = Completer<void>();
     context.bloc<StorageBloc>().add(GetAllStorageEvent());
   }
 
@@ -65,42 +74,52 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         title: Text('Testbefund'),
       ),
-      body: BlocBuilder<StorageBloc, StorageState>(
-        builder: (ccontext, state) {
-
-          if (state is StorageFetched) {
-            if (state.testCases.isEmpty)
-              return Container(
-                child: Center(
-                  child: Text('Es sind noch keine QR Codes eingescannt worden.'),
-                ),
-              );
-
-            var cases = state.testCases.map((caze) {
-              var date = DateTime.parse(caze.date);
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.blue,
-                ),
-                title: Text(caze.nickname),
-                subtitle: Text('Stand: ${date.day}.${date.month}.${date.year}'),
-                trailing: Text('${_readableStatus(caze.infected)}'),
-                onLongPress: () => _editNickname(context),
-              );
-            });
-
-            return Container(
-                child: RefreshIndicator(
-                  onRefresh: () => _refreshCallback(),
-                  child: ListView(
-                    children: cases.toList()
-                  ),
-                )
-            );
+      body: BlocConsumer<APIBloc, APIState>(
+        listener: (_, apiState) {
+          if(apiState is APILoadedMultiple) {
+            _refreshCompleter?.complete();
+            _refreshCompleter = Completer();
           }
+        },
+        builder: (_, apiState) {
+          return BlocBuilder<StorageBloc, StorageState>(
+            builder: (_, state) {
 
-          return Container(
-            child: Text('loading'),
+              if (state is StorageFetched) {
+                if (state.testCases.isEmpty)
+                  return Container(
+                    child: Center(
+                      child: Text('Es sind noch keine QR Codes eingescannt worden.'),
+                    ),
+                  );
+
+                var cases = state.testCases.map((caze) {
+                  var date = DateTime.parse(caze.date);
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: _getStatusColor(caze.infected),
+                    ),
+                    title: Text(caze.nickname),
+                    subtitle: Text('Stand: ${date.day}.${date.month}.${date.year}'),
+                    trailing: Text('${_readableStatus(caze.infected)}'),
+                    onLongPress: () => _editNickname(context),
+                  );
+                });
+
+                return Container(
+                    child: RefreshIndicator(
+                      onRefresh: () => _refreshCallback(state.testCases),
+                      child: ListView(
+                          children: cases.toList()
+                      ),
+                    )
+                );
+              }
+
+              return Container(
+                child: Text('loading'),
+              );
+            },
           );
         },
       ),
@@ -127,6 +146,19 @@ class _MainPageState extends State<MainPage> {
         return 'Positiv getetet';
       case CoronaStatus.NEGATIVE:
         return 'Negativ getestet';
+    }
+  }
+
+  Color _getStatusColor(CoronaStatus status) {
+    switch(status) {
+      case CoronaStatus.NOT_TESTED:
+        return Colors.grey;
+      case CoronaStatus.IN_PROGRESS:
+        return Colors.blue;
+      case CoronaStatus.POSITIVE:
+        return Colors.green;
+      case CoronaStatus.NEGATIVE:
+        return Colors.red;
     }
   }
 

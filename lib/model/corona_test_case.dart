@@ -13,12 +13,14 @@ CoronaStatus getCoronaStatusFromString(String status) {
 }
 
 class CoronaTestCase {
+  final String nickname;
   final String uuidRead;
   final String uuidWrite;
   final CoronaStatus infected;
   final String date;
 
   const CoronaTestCase({
+    @required this.nickname,
     @required this.uuidRead,
     @required this.uuidWrite,
     @required this.infected,
@@ -31,6 +33,7 @@ class CoronaTestCase {
 
   factory CoronaTestCase.fromJson(Map<String, dynamic> json) {
     return new CoronaTestCase(
+        nickname: json["uuid_read"],
         uuidRead: json["uuid_read"],
         uuidWrite: json["uuid_write"],
         infected: getCoronaStatusFromString(json["infected"]),

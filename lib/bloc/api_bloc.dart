@@ -15,13 +15,15 @@ class APIBloc extends Bloc<APIEvent, APIState> {
     if (event is GetAPIEvent) {
       yield APILoading();
 
-      final CoronaResponse apiResult = await APIService.get(event.url);
+      final CoronaResponse apiResponse = await APIService.get(event.url);
 
-      if (apiResult.coronaTestCase != null) {
-        yield APILoaded();
+      // Persist Testcase
+
+      if (apiResponse.coronaTestCase != null) {
+        yield APILoaded(response: apiResponse.coronaTestCase);
       }
       else {
-        yield APIError();
+        yield APIError(message: apiResponse.errorMessage);
       }
     } else if (event is RequestCompleteEvent) {
       yield APIWaiting();

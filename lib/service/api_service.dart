@@ -30,8 +30,10 @@ class APIService {
           errorMessage: 'Code konnte nicht verarbeitet werden.'
       );
 
+    print(response);
+
     return CoronaResponse(
-        coronaTestCase: CoronaTestCase.fromJson(jsonDecode(response.data))
+        coronaTestCase: CoronaTestCase.fromJson(response.data)
     );
   }
 }

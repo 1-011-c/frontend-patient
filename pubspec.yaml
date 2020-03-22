@@ -19,7 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  barcode_scan: ^2.0.1
+  # https://pub.dev/packages/flutter_qr_bar_scanner
+  flutter_qr_bar_scanner: ^1.0.1
   # https://pub.dev/packages/flutter_bloc
   # https://bloclibrary.dev/#/
   bloc: ^3.0.0

@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_patient/bloc/storage_bloc.dart';
+import 'package:frontend_patient/event/storage_event.dart';
+import 'package:frontend_patient/page/scan_page.dart';
+import 'package:frontend_patient/state/storage_state.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
 
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   Future<String> _refreshCallback() {
     return Future.value('okee');
   }
@@ -41,58 +51,68 @@ class MainPage extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    context.bloc<StorageBloc>().add(GetAllStorageEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Testbefund'),
       ),
-      body: Container(
-        child: RefreshIndicator(
-          onRefresh: () => _refreshCallback(),
-          child: ListView(
-            children: [
-              ListTile(
+      body: BlocBuilder<StorageBloc, StorageState>(
+        builder: (context, state) {
+
+          if (state is StorageFetched) {
+
+            if (state.testCases.isEmpty)
+              return Container(
+                child: Center(
+                  child: Text('Es sind noch keine QR Codes eingescannt worden.'),
+                ),
+              );
+
+            var cases = state.testCases.map((caze) {
+              return ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.blue,
                 ),
-                title: Text('Scan 1'),
-                subtitle: Text('Stand: 2017-07-05'),
-                trailing: Text('Status: In Bearbeitung'),
+                title: Text(caze.nickname ?? caze.uuidRead),
+                subtitle: Text('Stand: ${caze.date}'),
+                trailing: Text('Status: ${caze.infected}'),
                 onLongPress: () => _editNickname(context),
-              ),
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.red,
-                ),
-                title: Text('Mama'),
-                subtitle: Text('Stand: 2017-07-05'),
-                trailing: Text('Status: Negativ'),
-              ),
-              ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.blue,
+              );
+            });
+
+            return Container(
+                child: RefreshIndicator(
+                  onRefresh: () => _refreshCallback(),
+                  child: ListView(
+                    children: cases.toList()
                   ),
-                  title: Text('Papa'),
-                  subtitle: Text('Stand: 2017-07-05'),
-                  trailing: Text('Status: In Bearbeitung')
-              ),
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.green,
-                ),
-                title: Text('Scan 3'),
-                subtitle: Text('Stand: 2017-07-05'),
-                trailing: Text('Status: Positiv'),
-              )
-            ],
-          ),
-        )
+                )
+            );
+          }
+
+          return Container(
+            child: Text('loading'),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.camera),
-        onPressed: null,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ScannerPage()),
+          );
+        }
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
+
+
 }

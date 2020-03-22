@@ -13,6 +13,7 @@ class APIService {
   static Dio dio = new Dio(BaseOptions(connectTimeout: API_TIMEOUT));
 
   static Future<CoronaResponse> get(final String url) async {
+    print('Try to fetch from QR code');
     if (!url.startsWith(API_BASE_PATH))
       return CoronaResponse(
           coronaTestCase: null,

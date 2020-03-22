@@ -10,7 +10,9 @@ import 'package:frontend_patient/state/api_state.dart';
 class APIBloc extends Bloc<APIEvent, APIState> {
   @override
   Stream<APIState> mapEventToState(APIEvent event) async* {
+    print('Entering APIBloc');
     if (event is GetAPIEvent) {
+      print('Loading');
       yield APILoading();
 
       final CoronaResponse apiResponse = await APIService.get(event.url);

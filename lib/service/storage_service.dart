@@ -25,9 +25,14 @@ class StorageService {
 
   static Future<bool> storeOrUpdate(final CoronaTestCase testCase) async {
     final List<CoronaTestCase> testCases = await StorageService.getAll();
+    print('List of testcases:');
+    print(testCases);
     testCases.add(testCase);
 
-    final String json = jsonEncode(testCases.toSet());
+    print('Set: ${testCases.toSet()}');
+
+    final String json = jsonEncode(testCases.toSet().toList());
+    print('JSON: $json');
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return await prefs.setString(STORAGE_KEY, json);
   }

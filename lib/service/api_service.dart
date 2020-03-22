@@ -20,6 +20,8 @@ class APIService {
           errorMessage: 'QR Code ist ungültig. Eventuell haben Sie einen falschen eingescannt.'
       );
 
+    print('Try to fetch from $API_BASE_URL$url');
+
     final Response response = await dio.get('$API_BASE_URL$url');
 
     if (response.statusCode != 200)

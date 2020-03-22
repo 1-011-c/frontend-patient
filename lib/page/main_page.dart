@@ -63,10 +63,9 @@ class _MainPageState extends State<MainPage> {
         title: Text('Testbefund'),
       ),
       body: BlocBuilder<StorageBloc, StorageState>(
-        builder: (context, state) {
+        builder: (ccontext, state) {
 
           if (state is StorageFetched) {
-
             if (state.testCases.isEmpty)
               return Container(
                 child: Center(
@@ -79,7 +78,7 @@ class _MainPageState extends State<MainPage> {
                 leading: CircleAvatar(
                   backgroundColor: Colors.blue,
                 ),
-                title: Text(caze.nickname ?? caze.uuidRead),
+                title: Text(caze.nickname),
                 subtitle: Text('Stand: ${caze.date}'),
                 trailing: Text('Status: ${caze.infected}'),
                 onLongPress: () => _editNickname(context),
@@ -106,7 +105,7 @@ class _MainPageState extends State<MainPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ScannerPage()),
+            MaterialPageRoute(builder: (_) => ScannerPage(parentContext: context)),
           );
         }
       ),

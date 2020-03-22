@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_patient/bloc/storage_bloc.dart';
 import 'package:frontend_patient/event/api_event.dart';
+import 'package:frontend_patient/event/storage_event.dart';
 import 'package:frontend_patient/model/corona_response.dart';
 import 'package:frontend_patient/service/api_service.dart';
 import 'package:frontend_patient/service/storage_service.dart';
@@ -17,9 +19,12 @@ class APIBloc extends Bloc<APIEvent, APIState> {
 
       final CoronaResponse apiResponse = await APIService.get(event.url);
 
+      print('${apiResponse.coronaTestCase.uuidRead} : ${apiResponse.coronaTestCase.date}');
+
       if (apiResponse.coronaTestCase != null) {
         if(await StorageService.storeOrUpdate(apiResponse.coronaTestCase)) {
           yield APILoaded(response: apiResponse.coronaTestCase);
+          event.context.bloc<StorageBloc>().add(GetAllStorageEvent());
         }
         else {
           yield APIError(message: 'Could not store test-case');

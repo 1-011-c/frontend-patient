@@ -10,6 +10,7 @@ class StorageBloc extends Bloc<StorageEvent, StorageState> {
   @override
   Stream<StorageState> mapEventToState(StorageEvent event) async* {
     if (event is GetAllStorageEvent) {
+      print('Getting all Testcases');
       yield StorageFetching();
       final List<CoronaTestCase> testCases = await StorageService.getAll();
       yield StorageFetched(testCases: testCases);
